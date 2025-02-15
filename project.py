@@ -12,6 +12,7 @@ ekran.iconphoto(False, ekran_icon)
 
 listeKutusu=""
 listelePenceresi=""
+
 # ---------------------------------------------------------------------------- #
 #                          VERITABANININ OLUŞTURULMASI                         #
 # ---------------------------------------------------------------------------- #
@@ -22,36 +23,43 @@ curr=kisiselbilgi.cursor()
 # ---------------------------------------------------------------------------- #
 # Kitap Kaydı Tablosunun Oluşturulması
 #IF NOT EXISTS  ekleyerek defalarca aynı tablos oluşuturulmasını istek yapmıyoruz.Bu da hata almamızı engelliyor
-curr.execute(''' CREATE TABLE IF NOT EXISTS kitapKaydi (
-  ID INT PRIMARY KEY,
-  name VARCHAR(50),
-  username VARCHAR(15),
-  age INTEGER,
-  password INTEGER
+curr.execute(''' CREATE TABLE IF NOT EXISTS kisiselbilgi (
+  userID INTEGER PRIMARY KEY,
+  isim VARCHAR(50),
+  nickname VARCHAR(15),
+  sifre INTEGER,
+  yas INTEGER
   )   ''')
 
 kisiselbilgi.commit()
 kisiselbilgi.close()
 
 # ---------------------------------------------------------------------------- #
-# YENİ ELEMAN KAYIT İŞLEME
-def Kaydet():
-    userID=ID.get()
-    isim=name.get()
-    nickname=username.get()
-    sifre=password.get()
-    yas=age.get()
 
-    # Veritabanı bağlantısı
-    kisiselbilgi=sqlite3.connect("kisiselbilgi.db")
-    curr=kisiselbilgi.cursor()
-    curr.execute(''' INSERT INTO kitapKaydi (ID,name,username,password,age) VALUES 
-    (?,?,?,?)''',(userID,isim,nickname,sifre,yas))
-    kisiselbilgi.commit()
-    kisiselbilgi.close()
 
 # ---------------------------------------------------------------------------- #
 def duzenle():
+    def guncelleme():
+        user=userID.get()
+        ad=isim.get()
+        name=nickname.get()
+        password=sifre.get()
+        age=yas.get()
+              
+        #veritabanı bağlantısını oluşutrduk
+        kisiselbilgi=sqlite3.connect("kisiselbilgi.db")
+        curr=kisiselbilgi.cursor()
+        curr.execute(''' INSERT INTO kisiselbilgi (userID,isim,nickname,sifre,yas) VALUES 
+        (?,?,?,?,?)''',(user,ad,name,password,age))
+        kisiselbilgi.commit()
+        kisiselbilgi.close() 
+                
+              Listele()   
+
+      guncelleButon=Button(guncellePenceresi,text="GUNCELLE",command=guncelleme)
+      guncelleButon.place(x=120,y=120)
+      
+      
       secilen=listeKutusu.curselection()
       secilmis=secilen[0]
     
@@ -75,25 +83,7 @@ def duzenle():
       AlınısTarihi.place(x=80, y=80)
       
       
-      def guncelleme():
-              userID=ID.get()
-              isim=name.get()
-              nickname=username.get()
-              sifre=password.get()
-              yas=age.get()
-              
-              #veritabanı bağlantısını oluşutrduk
-              kisiselbilgi=sqlite3.connect("kisiselbilgi.db")
-              curr=kisiselbilgi.cursor()
-              curr.execute(''' INSERT INTO kitapKaydi (ID,name,username,password,age) VALUES 
-              (?,?,?,?)''',(userID,isim,nickname,sifre,yas))
-              kisiselbilgi.commit()
-              kisiselbilgi.close() 
-                
-              Listele()   
-
-      guncelleButon=Button(guncellePenceresi,text="GUNCELLE",command=guncelleme)
-      guncelleButon.place(x=120,y=120)
+      
       
      
       
@@ -164,40 +154,14 @@ def Listele():
 # etiket.place(x=500, y=30)  # Sağ üst köşeye yerleştir
 
 # ---------------------------------------------------------------------------- #
-# Girişler ve Etiketler
-Label(ekran, text="Üye ID:").place(x=100, y=20)
-userID = Entry(ekran)
-userID.place(x=200, y=20)
 
-Label(ekran, text="Üye Adı:").place(x=100, y=50)
-isim = Entry(ekran)
-isim.place(x=200, y=50)
-
-Label(ekran, text="Üye nickname:").place(x=100, y=50)
-nickname = Entry(ekran)
-nickname.place(x=200, y=80)
-
-Label(ekran, text="Yas:").place(x=100, y=80)
-yas = Entry(ekran)
-yas.place(x=200, y=120)
-
-Label(ekran, text="Sifre:").place(x=100, y=110)
-sifre = Entry(ekran)
-sifre.place(x=200, y=150)
-
-# ---------------------------------------------------------------------------- #
-# Kaydet Butonu
-kaydetButon = Button(ekran, text="KAYDET", command=Kaydet)
-kaydetButon.place(x=150, y=140) 
-
-listeleButton=Button(ekran,text="LİSTELE",command=Listele)
-listeleButton.place(x=210,y=140)
 
 #img = PhotoImage(file = "D:\python_proje\Sport-coaching-app\images\menu_photo.jpg")
 #img_label = Label(ekran, image=img)
 #img_label.place(x=-98, y=-9)
 
 def register():
+
     registerPage=Toplevel(ekran)
     registerPage.title("Register Page")
     registerPage.geometry("400x600+500+200")
@@ -205,22 +169,58 @@ def register():
     registerPage_icon = PhotoImage(file=r"images\icon.png")
     registerPage.iconphoto(False, registerPage_icon)
 
+
+    # YENİ ELEMAN KAYIT İŞLEME
+    def Kaydet():
+        
+        user=userID.get()
+        ad=isim.get()
+        name=nickname.get()
+        password=sifre.get()
+        age=yas.get()
+
+        print(user, ad, name, password, age)
+        # Veritabanı bağlantısı
+        kisiselbilgi=sqlite3.connect("kisiselbilgi.db")
+        curr=kisiselbilgi.cursor()
+        curr.execute(''' INSERT INTO kisiselbilgi (userID,isim,nickname,sifre,yas) VALUES 
+        (?,?,?,?,?)''',(user,ad,name,password,age))
+        kisiselbilgi.commit()
+        kisiselbilgi.close()
+
     AdLabel=Label(registerPage,text="PERSONAL SPORT COACHING APP", font = ("Inter 10"))
     AdLabel.place(x=56,y=3)
-    
-    AdLabel=Label(registerPage,text="Name:", bg = "#8D7160")
-    AdLabel.place(x=45,y=80)
-    
-    AdLabel=Label(registerPage,text="Username:", bg = "#8D7160")
-    AdLabel.place(x=45,y=100)
-    
-    AdLabel=Label(registerPage,text="age:", bg = "#8D7160")
-    AdLabel.place(x=45,y=120)
 
-    AdLabel=Label(registerPage,text="Password:", bg = "#8D7160")
-    AdLabel.place(x=45,y=150)
+    # Girişler ve Etiketlers
+    Label(registerPage, text="Üye ID:").place(x=100, y=30)
+    userID = Entry(registerPage)
+    userID.place(x=200, y=30)
+
+    Label(registerPage, text="Isim:").place(x=100, y=60)
+    isim = Entry(registerPage)
+    isim.place(x=200, y=60)
+
+    Label(registerPage, text="Üye nickname:").place(x=100, y=90)
+    nickname = Entry(registerPage)
+    nickname.place(x=200, y=90)
+
+    Label(registerPage, text="Yas:").place(x=100, y=120)
+    yas = Entry(registerPage)
+    yas.place(x=200, y=120)
+
+    Label(registerPage, text="Sifre:").place(x=100, y=150)
+    sifre = Entry(registerPage)
+    sifre.place(x=200, y=150)
+    print("merhaba")
+
+    kaydetButon = Button(registerPage, text="KAYDET", command=Kaydet)
+    kaydetButon.place(x=150, y=180) 
+
+    listeleButton=Button(registerPage,text="LİSTELE",command=Listele)
+    listeleButton.place(x=210,y=180)
 
 def Login():
+    
     loginPage=Toplevel(ekran)
     loginPage.title("Login Page")
     loginPage.geometry("400x600+500+200")
@@ -276,7 +276,5 @@ personalButton.place(x=233,y=36)
 
 
 
-
-ekran.mainloop()
 
 ekran.mainloop()
